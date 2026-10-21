@@ -1,0 +1,28 @@
+{
+  "name": "nestling",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test tests/*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "test:ui": "node --test tests/ui.spec.mjs",
+    "test:preview": "node --test tests/preview.spec.mjs",
+    "test:design": "node --test tests/design.spec.mjs",
+    "backend:check": "node scripts/check-backend.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2",
+    "next": "^15",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "playwright-core": "^1.63.0",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,35 @@
+
+> dev
+> next dev
+
+   ▲ Next.js 15.5.26
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.100.13:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 11.8s
+ ○ Compiling / ...
+ ✓ Compiled / in 3.3s (810 modules)
+ GET / 200 in 5826ms
+ GET / 200 in 168ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 2.6s (840 modules)
+ GET /login 200 in 3508ms
+ GET /admin 200 in 3680ms
+ GET / 200 in 2283ms
+ GET /admin 200 in 184ms
+ ○ Compiling /admin/products ...
+ ✓ Compiled /admin/products in 2.1s (840 modules)
+ GET /admin/products 200 in 2931ms
+ GET /admin/products 200 in 94ms
+ GET / 200 in 188ms
+ GET / 200 in 831ms
+ GET / 200 in 72ms
+ GET / 200 in 712ms
+ GET /admin 200 in 318ms
+ GET /admin/products 200 in 93ms
+ GET / 200 in 203ms
+ GET / 200 in 84ms
+ GET /?offers=1 200 in 85ms
+ GET / 200 in 91ms

@@ -1,0 +1,119 @@
+.scene {
+  perspective: 1100px;
+  isolation: isolate;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 450ms cubic-bezier(.2,.65,.25,1);
+}
+
+.card {
+  transform-style: preserve-3d;
+  border: 1px solid #ffffff0d;
+  box-shadow: 0 30px 45px -28px #0009, inset 0 1px 0 #ffffff12;
+  animation: drift 7s ease-in-out infinite;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, #ffffff06, transparent 50%, #00000012);
+}
+
+.teddy {
+  --depth: 0px;
+  --angle: 0deg;
+  --sway: -1.5deg;
+  --lift: -12px;
+}
+
+.bottle {
+  --depth: 42px;
+  --angle: 7deg;
+  --sway: 10deg;
+  --lift: -18px;
+  animation-duration: 6.5s;
+  animation-delay: -2s;
+}
+
+.baby {
+  --depth: 64px;
+  --angle: -7deg;
+  --sway: -10deg;
+  --lift: -14px;
+  animation-duration: 8s;
+  animation-delay: -4s;
+}
+
+.card .toy {
+  display: inline-block;
+  width: 86%;
+  height: 86%;
+  margin: 7%;
+  font-size: 0;
+  background: center / contain no-repeat;
+  transform: translateZ(30px);
+  filter: drop-shadow(0 15px 9px #0003);
+  animation: toyBob 5s ease-in-out infinite;
+}
+
+.teddy .toy { --toy-offset: 13px; background-image:url("/hero-cars/ride-on-suv.webp"); }
+.bottle .toy { background-image:url("/hero-cars/ride-on-sports-car.webp"); animation-delay: -1.5s; }
+.baby .toy { background-image:url("/hero-cars/ride-on-jeep.webp"); animation-delay: -3s; }
+
+.teddy :global(.hero-tag) { font-size: 0; }
+.teddy :global(.hero-tag)::after { content: "Ride-on cars"; font-size: .9rem; }
+
+.sparkle {
+  position: absolute;
+  color: #b4c0ff;
+  font-size: 24px;
+  pointer-events: none;
+  animation: twinkle 5s ease-in-out infinite;
+}
+.sparkleOne { left: 1%; top: 11%; }
+.sparkleTwo { right: 6%; bottom: 1%; font-size: 32px; animation-delay: -2s; }
+.sparkleThree { left: 42%; top: 0; font-size: 15px; color: #e8cd8b; animation-delay: -3.5s; }
+
+@keyframes drift {
+  0%, 100% { transform: translate3d(0, 0, var(--depth)) rotateZ(var(--angle)); }
+  50% { transform: translate3d(0, var(--lift), var(--depth)) rotateZ(var(--sway)); }
+}
+@keyframes toyBob {
+  0%, 100% { transform: translate3d(0, var(--toy-offset, 0px), 30px) rotate(-3deg); }
+  50% { transform: translate3d(0, calc(var(--toy-offset, 0px) - 8px), 42px) rotate(3deg); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: .25; transform: translateZ(25px) scale(.75) rotate(-12deg); }
+  50% { opacity: .8; transform: translate3d(0, -8px, 25px) scale(1) rotate(12deg); }
+}
+
+.scene[data-paused="true"] .card,
+.scene[data-paused="true"] .toy,
+.scene[data-paused="true"] .sparkle { animation-play-state: paused; }
+
+@media (max-width: 700px) {
+  .bottle { --depth: 12px; --lift: -10px; }
+  .baby { --depth: 20px; --lift: -8px; }
+  .teddy { --lift: -7px; }
+  .sparkle { font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage { transform: none; transition: none; }
+  .card, .card .toy, .sparkle { animation: none; }
+  .card .toy { transform: translateY(var(--toy-offset, 0px)); }
+  .sparkle { opacity: .4; }
+}
+
+:global(html[data-theme="light"]) .scene{filter:drop-shadow(0 18px 26px #24355b18)}
+:global(html[data-theme="light"]) .card{border-color:#ffffffb8;box-shadow:0 30px 45px -28px #25345636,inset 0 1px 0 #ffffffaa}
+:global(html[data-theme="light"]) .card::after{background:linear-gradient(135deg,#ffffff70,transparent 50%,#667fbe12)}

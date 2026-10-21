@@ -1,0 +1,20 @@
+import ProductReviews from "@/components/ProductReviews";
+import RelatedProducts from "@/components/RelatedProducts";
+import {demoProducts} from "@/lib/demo";
+import {jsonLd} from "@/lib/utils";
+import Image from "next/image";import {isSupabaseConfigured,sb,PCOLS,Product,SITE} from "@/lib/supabase";import Buy from "@/components/Buy";import {notFound} from "next/navigation";
+type P2=Product&{seo_title:string|null;seo_description:string|null};
+const get=async(slug:string)=>{
+ if(!isSupabaseConfigured){const product=demoProducts.find(p=>p.slug===slug);return product?{...product,seo_title:null,seo_description:null}:null;}
+ const {data,error}=await sb.from("products").select(PCOLS).eq("slug",slug).eq("status","active").maybeSingle();
+ if(error)throw error; return data as unknown as P2|null;
+};
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}){const p=await get((await params).slug);if(!p)return{};
+return{title:p.seo_title||p.name,description:p.seo_description||p.short_description||undefined,alternates:{canonical:`${SITE}/product/${p.slug}`},openGraph:{images:p.product_images[0]?[p.product_images[0].url]:[]}}}
+export default async function P({params}:{params:Promise<{slug:string}>}){const p=await get((await params).slug);if(!p)notFound();
+const price=p.sale_price??p.regular_price;const imgs=[...p.product_images].sort((a,b)=>a.sort_order-b.sort_order);
+const specs=[['Model',p.model_number],['Recommended age',p.recommended_age],['Maximum load',p.max_load_kg?`${p.max_load_kg} kg`:null],['Charging time',p.charging_time_hours?`${p.charging_time_hours} hours`:null],['Battery',p.technical_specs?.battery],['Motors',p.technical_specs?.motors],['Seats',p.technical_specs?.seating_capacity],['Remote control',p.technical_specs?.remote_control],['Material',p.material],['Dimensions',p.product_dimensions_cm],['Features',p.technical_specs?.features]].filter((item):item is [string,string]=>Boolean(item[1]));
+const ld={"@context":"https://schema.org","@type":"Product",name:p.name,description:p.short_description,image:imgs.map(i=>i.url),brand:p.brands?.name,offers:{"@type":"Offer",priceCurrency:"PKR",price,availability:p.product_variants.some(v=>v.stock>0)?"https://schema.org/InStock":"https://schema.org/OutOfStock"}};
+return(<><main className="two product-detail"><script type="application/ld+json" dangerouslySetInnerHTML={{__html:jsonLd(ld)}}/>
+<div>{!imgs.length&&<div className={`detail-art tone-${p.tone||"blue"}`} aria-label={p.name}>{p.art||"Musa Traders"}</div>}{imgs.map(i=><Image key={i.url} src={i.url} alt={i.alt||p.name} width={600} height={600} style={{width:"100%",height:"auto",borderRadius:20,marginBottom:12}}/>)}</div>
+<div><small>{p.brands?.name}</small><h1>{p.name}</h1><p>{p.short_description}</p><Buy id={p.id} name={p.name} price={price} variants={p.product_variants}/><p style={{whiteSpace:"pre-line"}}>{p.description}</p>{specs.length>0&&<section className="product-specifications"><h2>Specifications</h2><dl>{specs.map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>}{p.product_addons?.filter(addon=>addon.active).length? <section className="product-specifications"><h2>Available upgrades</h2><p>Choose the matching configured option above to include an upgrade in your order.</p>{p.product_addons.filter(addon=>addon.active).sort((a,b)=>a.sort_order-b.sort_order).map(addon=><p key={addon.name}><strong>{addon.name}</strong> + Rs. {Number(addon.price_adjustment).toLocaleString('en-PK')}{addon.description&&<> — {addon.description}</>}</p>)}</section>:null}{p.box_contents&&<section className="product-specifications"><h2>In the box</h2><p style={{whiteSpace:"pre-line"}}>{p.box_contents}</p></section>}{p.safety_information&&<section className="product-specifications"><h2>Safety information</h2><p style={{whiteSpace:"pre-line"}}>{p.safety_information}</p></section>}{p.warranty_text&&<section className="product-specifications"><h2>Warranty</h2><p style={{whiteSpace:"pre-line"}}>{p.warranty_text}</p></section>}</div></main>{isSupabaseConfigured&&<><RelatedProducts productId={p.id}/><ProductReviews productId={p.id}/></>}</>)}
